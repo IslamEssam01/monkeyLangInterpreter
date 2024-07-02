@@ -49,6 +49,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return &object.ReturnValue{Value: val}
 	case *ast.LetStatement:
+		if _, ok := builtins[node.Name.Value]; ok {
+			return newError("can't assign to %s , it is a builtin function", node.Name.Value)
+		}
 		val := Eval(node.Value, env)
 		if isError(val) {
 			return val
@@ -75,7 +78,25 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
 
+		return &object.Array{Elements: elements}
+
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+		index := Eval(node.Index, env)
+		if isError(index) {
+			return index
+		}
+
+		return evalIndexExpression(left, index)
 	}
 
 	return nil
@@ -220,11 +241,13 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
-	val, ok := env.Get(node.Value)
-	if !ok {
-		return newError("identifier not found: " + node.Value)
+	if val, ok := env.Get(node.Value); ok {
+		return val
 	}
-	return val
+	if builtin, ok := builtins[node.Value]; ok {
+		return builtin
+	}
+	return newError("identifier not found: " + node.Value)
 }
 
 func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {
@@ -240,28 +263,57 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 	return result
 }
 
+func evalIndexExpression(left, index object.Object) object.Object {
+	switch {
+	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return evalArrayIndexExpression(left, index)
+	default:
+		return newError("index operator not supported: %s", left.Type())
+	}
+}
+
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	arrayObject := array.(*object.Array)
+	idx := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+
+	if idx < 0 {
+		return newError("array index can't be negative")
+	}
+	if idx > max {
+		return newError("array index out of range , maxIndex=%d", max)
+	}
+
+	return arrayObject.Elements[idx]
+}
+
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
-	if !ok {
+	// function, ok := fn.(*object.Function)
+	switch fn := fn.(type) {
+	case *object.Function:
+		if len(fn.Parameters) > len(args) {
+			return newError(
+				"Too few arguments, expected %d, got %d",
+				len(fn.Parameters),
+				len(args),
+			)
+		}
+		if len(fn.Parameters) < len(args) {
+			return newError(
+				"Too many arguments, expected %d, got %d",
+				len(fn.Parameters),
+				len(args),
+			)
+		}
+		extendedEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extendedEnv)
+		return unwrapReturnValue(evaluated)
+	case *object.Builtin:
+		return fn.Fn(args...)
+	default:
+
 		return newError("not a function: %s", fn.Type())
 	}
-	if len(function.Parameters) > len(args) {
-		return newError(
-			"Too few arguments, expected %d, got %d",
-			len(function.Parameters),
-			len(args),
-		)
-	}
-	if len(function.Parameters) < len(args) {
-		return newError(
-			"Too many arguments, expected %d, got %d",
-			len(function.Parameters),
-			len(args),
-		)
-	}
-	extendedEnv := extendFunctionEnv(function, args)
-	evaluated := Eval(function.Body, extendedEnv)
-	return unwrapReturnValue(evaluated)
 }
 
 func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
