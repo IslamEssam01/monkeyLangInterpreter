@@ -892,6 +892,29 @@ func TestParsingEmptyHashLiteral(t *testing.T) {
 	}
 }
 
+func TestNull(t *testing.T) {
+	input := "null;"
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+	ident, ok := stmt.Expression.(*ast.Null)
+	if !ok {
+		t.Fatalf("exp not *ast.NULL. got=%T", stmt.Expression)
+	}
+	if ident.TokenLiteral() != "null" {
+		t.Errorf("ident.TokenLiteral not %s. got=%s", "null",
+			ident.TokenLiteral())
+	}
+}
+
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())

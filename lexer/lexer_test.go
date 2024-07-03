@@ -28,6 +28,7 @@ func TestNextToken(t *testing.T) {
     "foo bar"
     [1,2];
     {"foo": "bar"}
+    null
     `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -119,6 +120,7 @@ func TestNextToken(t *testing.T) {
 		{token.COLON, ":"},
 		{token.STRING, "bar"},
 		{token.RBRACE, "}"},
+		{token.NULL, "null"},
 		{token.EOF, ""},
 	}
 

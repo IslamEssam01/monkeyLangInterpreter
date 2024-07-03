@@ -33,7 +33,7 @@ const (
 	// Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
-    COLON  = ":"
+	COLON     = ":"
 
 	LPAREN   = "("
 	RPAREN   = ")"
@@ -52,6 +52,7 @@ const (
 	RETURN   = "RETURN"
 
 	STRING = "STRING"
+	NULL   = "NULL"
 )
 
 var keywords = map[string]TokenType{
@@ -62,6 +63,7 @@ var keywords = map[string]TokenType{
 	"true":   TRUE,
 	"false":  FALSE,
 	"return": RETURN,
+	"null":   NULL,
 }
 
 func LookupIdent(ident string) TokenType {

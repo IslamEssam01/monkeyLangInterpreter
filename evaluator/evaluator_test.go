@@ -515,6 +515,15 @@ func TestHashIndexExpressions(t *testing.T) {
 	}
 }
 
+func TestNull(t *testing.T) {
+	input := "null"
+	evaluated := testEval(input)
+	_, ok := evaluated.(*object.Null)
+	if !ok {
+		t.Fatalf("object is not NULL. got=%T (%+v)", evaluated, evaluated)
+	}
+}
+
 func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 	result, ok := obj.(*object.Boolean)
 	if !ok {
