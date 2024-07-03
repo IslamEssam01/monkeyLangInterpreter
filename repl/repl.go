@@ -8,14 +8,21 @@ import (
 	"monkey/lexer"
 	"monkey/object"
 	"monkey/parser"
+	"os/user"
 )
 
 const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
 	scanner := bufio.NewScanner(in)
-    env := object.NewEnvironment()
+	env := object.NewEnvironment()
 
+	fmt.Printf("Hello %s! This is the Monkey programming language!\n", user.Username)
+	fmt.Printf("Feel free to type in commands\n")
 	for {
 		fmt.Printf(PROMPT)
 		scanned := scanner.Scan()
