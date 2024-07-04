@@ -67,6 +67,7 @@ go run main.go
 - `ast/`: Defines the AST structures.
 - `eval/`: Evaluates Monkey code.
 - `repl/`: Handles the interactive REPL environment.
+- `object/`: Contains object representations and the Monkey object system.
 - `main.go`: Entry point of the interpreter.
 
 ## 📜 License
