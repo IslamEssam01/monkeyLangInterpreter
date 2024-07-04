@@ -17,61 +17,73 @@ Monkey is a small, dynamically-typed programming language designed for education
 ## 🌟 Language Highlights
 
 - **Variable Bindings:**
-    ```monkey
-    let x = 10;
-    let name = "Monkey";
-    ```
-- **Integers and Booleans and String:**
-    ```monkey
-    let flag = true;
-    let number = 42;
-    let string = "works";
-    ```
+  ```monkey
+  let x = 10;
+  let name = "Monkey";
+  ```
+- **Integers and Booleans and Strings:**
+  ```monkey
+  let flag = true;
+  let number = 42;
+  let string = "works";
+  ```
 - **Arithmetic Expressions:**
-    ```monkey
-    let sum = 2+3*4;
-    ```
+  ```monkey
+  let sum = 2 + 3 * 4;
+  ```
 - **Functions:**
-    ```monkey
-    let add = fn(a,b) { a+b; };
-    add(2,3); //5
-    ```
+  ```monkey
+  let add = fn(a, b) { a + b; };
+  add(2, 3); // 5
+  ```
 - **Arrays and Hashes:**
-    ```monkey
-    let array = [1,2,3];
-    let hash ={"key":"value"}
-    ```
+  ```monkey
+  let array = [1, 2, 3];
+  let hash = {"key": "value"};
+  ```
+
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Go: Any version should work
 
-### Installation 
+- **Go:** Version 1.11 or later
+
+### Installation
+
 1. **Clone the repository:**
-    ```sh
-    git clone https://github.com/IslamEssam01/monkeyLangInterpreter.git
-    ```
+   ```sh
+   git clone https://github.com/IslamEssam01/monkeyLangInterpreter.git
+   ```
 2. **Navigate to the project directory:**
-    ```sh
-    cd monkeyLangInterpreter
-    ```
-## Usage
-- Start the REPL to interact with the Monkey Language
-    ```sh
-    go run main.go
-    ```
+   ```sh
+   cd monkeyLangInterpreter
+   ```
+
+### Usage
+
+Start the REPL to interact with the Monkey language:
+```sh
+go run main.go
+```
 
 ## 🗂️ Project Structure
+
 - `lexer/`: Tokenizes Monkey code.
 - `parser/`: Converts tokens into an AST.
 - `ast/`: Defines the AST structures.
 - `eval/`: Evaluates Monkey code.
-- `repl/`: Handles the interactive REPL environment.
 - `object/`: Contains object representations and the Monkey object system.
+- `repl/`: Handles the interactive REPL environment.
 - `main.go`: Entry point of the interpreter.
 
 ## 📜 License
-This project is licensed under the MIT License. See the LICENSE file for details.
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 ## 🎉 Acknowledgments
-Thorsten Ball for his book [*Writing An Interpreter In Go*](https://interpreterbook.com/) which this project is based on.
+
+- Thorsten Ball for his book [*Writing An Interpreter In Go*](https://interpreterbook.com/) which this project is based on.
+
+---
+
+Happy coding with Monkey!
