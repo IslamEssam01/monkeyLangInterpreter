@@ -56,7 +56,7 @@ Monkey is a small, dynamically-typed programming language designed for education
     cd monkeyLangInterpreter
     ```
 ## Usage
-Start the REPL to interact with the Monkey Language
+- Start the REPL to interact with the Monkey Language
     ```sh
     go run main.go
     ```
