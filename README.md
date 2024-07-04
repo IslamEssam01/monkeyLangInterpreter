@@ -17,30 +17,30 @@ Monkey is a small, dynamically-typed programming language designed for education
 ## 🌟 Language Highlights
 
 - **Variable Bindings:**
-  ```monkey
-  let x = 10;
-  let name = "Monkey";
-  ```
+    ```monkey
+    let x = 10;
+    let name = "Monkey";
+    ```
 - **Integers and Booleans and String:**
-```monkey
-let flag = true;
-let number = 42;
-let string = "works";
-```
+    ```monkey
+    let flag = true;
+    let number = 42;
+    let string = "works";
+    ```
 - **Arithmetic Expressions:**
-```monkey
-let sum = 2+3*4;
-```
+    ```monkey
+    let sum = 2+3*4;
+    ```
 - **Functions:**
-```monkey
-let add = fn(a,b) { a+b; };
-add(2,3); //5
-```
+    ```monkey
+    let add = fn(a,b) { a+b; };
+    add(2,3); //5
+    ```
 - **Arrays and Hashes:**
-```monkey
-let array = [1,2,3];
-let hash ={"key":"value"}
-```
+    ```monkey
+    let array = [1,2,3];
+    let hash ={"key":"value"}
+    ```
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -48,18 +48,18 @@ let hash ={"key":"value"}
 
 ### Installation 
 1. **Clone the repository:**
-```sh
-git clone https://github.com/IslamEssam01/monkeyLangInterpreter.git
-```
+    ```sh
+    git clone https://github.com/IslamEssam01/monkeyLangInterpreter.git
+    ```
 2. **Navigate to the project directory:**
-```sh
-cd monkeyLangInterpreter
-```
+    ```sh
+    cd monkeyLangInterpreter
+    ```
 ## Usage
 Start the REPL to interact with the Monkey Language
-```sh
-go run main.go
-```
+    ```sh
+    go run main.go
+    ```
 
 ## 🗂️ Project Structure
 - `lexer/`: Tokenizes Monkey code.
