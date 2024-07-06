@@ -6,4 +6,5 @@
 - adding the += and -= operators [ x ]
 - adding the ability to do ( let x ; ) without having a value ( will be null ) [ x ]
 - adding the ability to have numbers and underscores in identifier ( but not in start ) [ x ]
-- adding try catch
+- adding try catch [ x ]
+- adding line number to tokens by lexer [ x ]
