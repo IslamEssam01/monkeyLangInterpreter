@@ -1,0 +1,7 @@
+- adding loops [ x ]
+- adding GTE , LTE (>= , <=) [ x ] 
+- adding else if [ x ]
+- adding increment and decrement (++,--) [ x ]
+- adding the ability to give a value to an already assigned variable ( x = 5 , without need to do let x again ) [ x ]
+- adding the += and -= operators [ x ]
+- adding the ability to do ( let x ; ) without having a value ( will be null ) [ x ]
