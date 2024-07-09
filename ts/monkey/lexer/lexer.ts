@@ -119,18 +119,25 @@ export default class Lexer {
         while (isLetter(this.ch)) {
             this.readChar();
         }
-        return this.input.slice(position, this.position);
+
+        return this.input.slice(
+            position,
+            this.position + (this.ch === "" ? 1 : 0),
+        );
     }
     private readNumber(): string {
         const position = this.position;
         while (isNumber(this.ch)) {
             this.readChar();
         }
-        return this.input.slice(position, this.position);
+        return this.input.slice(
+            position,
+            this.position + (this.ch === "" ? 1 : 0),
+        );
     }
 }
 function isLetter(ch: string) {
-    return /^[A-Za-z]$/.test(ch);
+    return /^[A-Za-z_]$/.test(ch);
 }
 
 function isNumber(ch: string) {

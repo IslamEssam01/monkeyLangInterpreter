@@ -1,3 +1,4 @@
 #! /usr/bin/env bun
-import "./command";
-console.log("Hello via Bun!");
+import { start } from "./repl/repl";
+
+start()

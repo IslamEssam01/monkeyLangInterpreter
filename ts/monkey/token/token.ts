@@ -35,16 +35,17 @@ export const IF = "IF";
 export const ELSE = "ELSE";
 export const TRUE = "TRUE";
 export const FALSE = "FALSE";
+export const NULL = "NULL";
 
 export const EOF = "EOF";
 export const ILLEGAL = "ILLEGAL";
-
 
 const keywords = new Map<string, tokenType>([
     ["fn", FUNCTION],
     ["let", LET],
     ["true", TRUE],
     ["false", FALSE],
+    ["null", NULL],
     ["if", IF],
     ["else", ELSE],
     ["return", RETURN],
