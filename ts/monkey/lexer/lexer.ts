@@ -116,7 +116,7 @@ export default class Lexer {
     }
     private readIdentifier(): string {
         const position = this.position;
-        while (isLetter(this.ch)) {
+        while (isLetter(this.ch) || isNumber(this.ch)) {
             this.readChar();
         }
 
