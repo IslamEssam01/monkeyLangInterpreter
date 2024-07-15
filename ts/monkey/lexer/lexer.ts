@@ -45,6 +45,12 @@ export default class Lexer {
             case ")":
                 tok = { type: token.RPAREN, literal: this.ch };
                 break;
+            case "[":
+                tok = { type: token.LBRACKET, literal: this.ch };
+                break;
+            case "]":
+                tok = { type: token.RBRACKET, literal: this.ch };
+                break;
             case ";":
                 tok = { type: token.SEMICOLON, literal: this.ch };
                 break;
@@ -64,6 +70,9 @@ export default class Lexer {
                 break;
             case "<":
                 tok = { type: token.LT, literal: this.ch };
+                break;
+            case `"`:
+                tok = { type: token.STRING, literal: this.readString() };
                 break;
             case "":
                 tok = { type: token.EOF, literal: "" };
@@ -134,6 +143,14 @@ export default class Lexer {
             position,
             this.position + (this.ch === "" ? 1 : 0),
         );
+    }
+    private readString(): string {
+        const position = this.position + 1;
+        while (true) {
+            this.readChar();
+            if (this.ch === `"` || this.ch === "") break;
+        }
+        return this.input.slice(position, this.position);
     }
 }
 function isLetter(ch: string) {

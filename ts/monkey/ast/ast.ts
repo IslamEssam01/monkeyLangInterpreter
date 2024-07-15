@@ -1,6 +1,6 @@
 import { TRUE, type Token } from "../token/token";
 
-abstract class Node {
+export abstract class Node {
     abstract tokenLiteral(): string;
     abstract string(): string;
 }
@@ -164,11 +164,10 @@ export class BlockStatement implements Statement {
         return this.token.literal;
     }
     string(): string {
-        let out = "{";
+        let out = "";
         this.statements?.forEach((stmt) => {
             out += stmt.string();
         });
-        out += "}";
         return out;
     }
 }
@@ -248,5 +247,52 @@ export class NullLiteral implements Expression {
     }
     string(): string {
         return this.token.literal;
+    }
+}
+
+export class StringLiteral implements Expression {
+    token: Token;
+    value: string;
+    constructor(token: Token) {
+        this.token = token;
+        this.value = token.literal;
+    }
+    tokenLiteral(): string {
+        return this.token.literal;
+    }
+    string(): string {
+        return this.value;
+    }
+}
+
+export class ArrayLiteral implements Expression {
+    token: Token;
+    elements?: Expression[] | null;
+    constructor(token: Token) {
+        this.token = token;
+    }
+    tokenLiteral(): string {
+        return this.token.literal;
+    }
+    string(): string {
+        const elements = this.elements?.map((elem) => elem.string()) || [];
+        return `[${elements.join(", ")}]`;
+    }
+}
+
+export class IndexExpression implements Expression {
+    token: Token;
+    left: Expression;
+    index: Expression;
+    constructor(token: Token, left: Expression, index: Expression) {
+        this.token = token;
+        this.left = left;
+        this.index = index;
+    }
+    tokenLiteral(): string {
+        return this.token.literal;
+    }
+    string(): string {
+        return `(${this.left.string()}[${this.index.string()}])`;
     }
 }

@@ -1,15 +1,17 @@
 import os from "os";
 import Lexer from "../lexer/lexer";
-import { EOF } from "../token/token";
 import { Parser } from "../parser/parser";
+import { evaluate } from "../evaluator/evaluator";
+import { Environment } from "../object/environment";
 
 export async function start() {
     const user = os.userInfo().username;
+    const env = new Environment();
 
     console.log(`Hello ${user} this is the Monkey Programming Language`);
     console.log("Feel free to type commands");
 
-    const prompt = ">>";
+    const prompt = ">> ";
     process.stdout.write(prompt);
     for await (const line of console) {
         const l = new Lexer(line);
@@ -24,7 +26,8 @@ export async function start() {
             process.stdout.write(prompt);
             continue;
         }
-        console.log(program.string());
+        const evaluated = evaluate(program, env);
+        if (evaluated) console.log(evaluated.inspect());
         process.stdout.write(prompt);
     }
 }

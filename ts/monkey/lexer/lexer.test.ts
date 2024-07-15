@@ -21,6 +21,9 @@ test("Test Next Token", () => {
 
     10 == 10;
     10 != 9;
+    "foobar"
+    "foo bar"
+    [1,2];
 `;
     const tests: { expectedType: token.tokenType; expectedLiteral: string }[] =
         [
@@ -96,6 +99,14 @@ test("Test Next Token", () => {
             { expectedType: token.INT, expectedLiteral: "10" },
             { expectedType: token.NOT_EQ, expectedLiteral: "!=" },
             { expectedType: token.INT, expectedLiteral: "9" },
+            { expectedType: token.SEMICOLON, expectedLiteral: ";" },
+            { expectedType: token.STRING, expectedLiteral: "foobar" },
+            { expectedType: token.STRING, expectedLiteral: "foo bar" },
+            { expectedType: token.LBRACKET, expectedLiteral: "[" },
+            { expectedType: token.INT, expectedLiteral: "1" },
+            { expectedType: token.COMMA, expectedLiteral: "," },
+            { expectedType: token.INT, expectedLiteral: "2" },
+            { expectedType: token.RBRACKET, expectedLiteral: "]" },
             { expectedType: token.SEMICOLON, expectedLiteral: ";" },
             { expectedType: token.EOF, expectedLiteral: "" },
         ];

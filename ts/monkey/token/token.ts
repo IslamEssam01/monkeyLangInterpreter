@@ -21,9 +21,12 @@ export const LBRACE = "{";
 export const RBRACE = "}";
 export const LPAREN = "(";
 export const RPAREN = ")";
+export const LBRACKET = "[";
+export const RBRACKET = "]";
 
 export const IDENT = "IDENT";
 export const INT = "INT";
+export const STRING = "STRING";
 
 export const EQ = "==";
 export const NOT_EQ = "!=";

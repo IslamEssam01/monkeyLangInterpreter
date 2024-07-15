@@ -4,7 +4,7 @@ import type Lexer from "../lexer/lexer";
 import * as token from "../token/token";
 
 type prefixParseFn = () => ast.Expression | null;
-type infixParseFn = (left: ast.Expression) => ast.Expression;
+type infixParseFn = (left: ast.Expression) => ast.Expression | null;
 enum Precedence {
     LOWEST = 1,
     EQUALS,
@@ -13,6 +13,7 @@ enum Precedence {
     PRODUCT,
     PREFIX,
     CALL,
+    INDEX,
 }
 const precedenceMp = new Map<token.tokenType, number>([
     [token.EQ, Precedence.EQUALS],
@@ -24,6 +25,7 @@ const precedenceMp = new Map<token.tokenType, number>([
     [token.SLASH, Precedence.PRODUCT],
     [token.ASTERISK, Precedence.PRODUCT],
     [token.LPAREN, Precedence.CALL],
+    [token.LBRACKET, Precedence.INDEX],
 ]);
 export class Parser {
     private curToken!: token.Token;
@@ -77,6 +79,14 @@ export class Parser {
             this.parseFunctionLiteral.bind(this),
         );
         this.registerPrefixFunction(token.NULL, this.parseNull.bind(this));
+        this.registerPrefixFunction(
+            token.STRING,
+            this.parseStringLiteral.bind(this),
+        );
+        this.registerPrefixFunction(
+            token.LBRACKET,
+            this.parseArrayLiteral.bind(this),
+        );
 
         this.infixParseFns = new Map<token.tokenType, infixParseFn>();
         this.registerInfixFunction(
@@ -114,6 +124,10 @@ export class Parser {
         this.registerInfixFunction(
             token.LPAREN,
             this.parseCallExpression.bind(this),
+        );
+        this.registerInfixFunction(
+            token.LBRACKET,
+            this.parseIndexExpression.bind(this),
         );
     }
 
@@ -244,6 +258,10 @@ export class Parser {
         return nullLiteral;
     }
 
+    private parseStringLiteral() {
+        return new ast.StringLiteral(this.curToken);
+    }
+
     private parseGroupedExpression() {
         this.nextToken();
         const exp = this.parseExpression(Precedence.LOWEST);
@@ -315,9 +333,30 @@ export class Parser {
         return fnLiteral;
     }
 
-    private parseCallArguments() {
+    // private parseCallArguments() {
+    //     const args: ast.Expression[] = [];
+    //     if (this.peekTokenIs(token.RPAREN)) {
+    //         this.nextToken();
+    //         return args;
+    //     }
+    //
+    //     this.nextToken();
+    //     let exp = this.parseExpression(Precedence.LOWEST)!;
+    //     args.push(exp);
+    //     while (this.peekTokenIs(token.COMMA)) {
+    //         this.nextToken();
+    //         this.nextToken();
+    //         exp = this.parseExpression(Precedence.LOWEST)!;
+    //         args.push(exp);
+    //     }
+    //     if (!this.expectPeek(token.RPAREN)) {
+    //         return null;
+    //     }
+    //     return args;
+    // }
+    private parseExpressionList(end: token.tokenType) {
         const args: ast.Expression[] = [];
-        if (this.peekTokenIs(token.RPAREN)) {
+        if (this.peekTokenIs(end)) {
             this.nextToken();
             return args;
         }
@@ -331,16 +370,31 @@ export class Parser {
             exp = this.parseExpression(Precedence.LOWEST)!;
             args.push(exp);
         }
-        if (!this.expectPeek(token.RPAREN)) {
+        if (!this.expectPeek(end)) {
             return null;
         }
         return args;
     }
     private parseCallExpression(fn: ast.Expression) {
         const callExp = new ast.CallExpression(this.curToken, fn);
-        callExp.arguments = this.parseCallArguments();
+        // callExp.arguments = this.parseCallArguments();
+        callExp.arguments = this.parseExpressionList(token.RPAREN);
 
         return callExp;
+    }
+
+    private parseArrayLiteral() {
+        const array = new ast.ArrayLiteral(this.curToken);
+        array.elements = this.parseExpressionList(token.RBRACKET);
+        return array;
+    }
+
+    private parseIndexExpression(left: ast.Expression) {
+        const tok = this.curToken;
+        this.nextToken();
+        const index = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(token.RBRACKET)) return null;
+        return new ast.IndexExpression(tok, left, index!);
     }
 
     private parsePrefixExpressison() {
