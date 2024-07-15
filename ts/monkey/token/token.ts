@@ -6,6 +6,7 @@ export interface Token {
 
 export const COMMA = ",";
 export const SEMICOLON = ";";
+export const COLON = ":";
 
 export const PLUS = "+";
 export const MINUS = "-";

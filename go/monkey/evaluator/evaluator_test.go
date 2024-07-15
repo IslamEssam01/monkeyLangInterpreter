@@ -342,7 +342,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`rest([1, 2, 3])`, []int{2, 3}},
 		{`rest([])`, nil},
 		{`push([], 1)`, []int{1}},
-		{`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
+		{`push(1, 1)`, "first argument to `push` must be ARRAY, got INTEGER"},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)

@@ -159,10 +159,10 @@ return 1;
             input: `"Hello" - "World"`,
             expectedMessage: "unknown operator: STRING - STRING",
         },
-        // {
-        //     input: `{"name": "Monkey"}[fn(x) { x }];`,
-        //     expectedMessage: "unusable as hash key: FUNCTION",
-        // },
+        {
+            input: `{"name": "Monkey"}[fn(x) { x }];`,
+            expectedMessage: "unusable as hash key: FUNCTION",
+        },
         {
             input: "[1, 2, 3][3]",
             expectedMessage: "array index out of range , maxIndex=2",
@@ -303,14 +303,23 @@ test("Test Builtin Functions", () => {
         // {"input": `puts("hello", "world!")`, "expected": null},
         // {"input": `first([1, 2, 3])`, "expected": 1},
         // {"input": `first([])`, "expected": null},
-        // {"input": `first(1)`, "expected": "argument to `first` must be ARRAY, got INTEGER"},
+        {
+            input: `first(1)`,
+            expected: "argument to `first` must be ARRAY, got INTEGER",
+        },
         // {"input": `last([1, 2, 3])`, "expected": 3},
         // {"input": `last([])`, "expected": null},
-        // {"input": `last(1)`, "expected": "argument to `last` must be ARRAY, got INTEGER"},
+        {
+            input: `last(1)`,
+            expected: "argument to `last` must be ARRAY, got INTEGER",
+        },
         // {"input": `rest([1, 2, 3])`, "expected": [2, 3]},
         // {"input": `rest([])`, "expected": null},
         // {"input": `push([], 1)`, "expected": [1]},
-        // {"input": `push(1, 1)`, "expected": "argument to `push` must be ARRAY, got INTEGER"},
+        {
+            input: `push(1, 1)`,
+            expected: "first argument to `push` must be ARRAY, got INTEGER",
+        },
     ];
 
     tests.forEach((test) => {
@@ -360,6 +369,36 @@ test("Test Array Index Expressions", () => {
     });
 });
 
+test("Test Hash Literals", () => {
+    const input = `let two = "two";
+	{
+		"one": 10 - 9,
+		two: 1 + 1,
+		"thr" + "ee": 6 / 2,
+		4: 4,
+		true: 5,
+		false: 6
+	}`;
+
+    const evaluated = testEval(input);
+    expect(evaluated).toBeInstanceOf(object.Hash);
+    const expected = new Map<object.HashKey, number>([
+        [new object.String("one").hashKey(), 1],
+        [new object.String("two").hashKey(), 2],
+        [new object.String("three").hashKey(), 3],
+        [new object.Integer(4).hashKey(), 4],
+        [new object.Boolean(true).hashKey(), 5],
+        [new object.Boolean(false).hashKey(), 6],
+    ]);
+    const result = evaluated as object.Hash;
+    expect(result.pairs.size).toBe(expected.size);
+
+    expected.forEach((val, key) => {
+        const pair = result.pairs.get(key);
+        expect(pair).not.toBeUndefined();
+        if (pair) testIntegerObject(pair.value, val);
+    });
+});
 function testEval(input: string) {
     const l = new Lexer(input);
     const p = new Parser(l);

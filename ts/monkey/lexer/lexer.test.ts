@@ -24,6 +24,8 @@ test("Test Next Token", () => {
     "foobar"
     "foo bar"
     [1,2];
+    {"foo": "bar"}
+    null
 `;
     const tests: { expectedType: token.tokenType; expectedLiteral: string }[] =
         [
@@ -108,6 +110,12 @@ test("Test Next Token", () => {
             { expectedType: token.INT, expectedLiteral: "2" },
             { expectedType: token.RBRACKET, expectedLiteral: "]" },
             { expectedType: token.SEMICOLON, expectedLiteral: ";" },
+            { expectedType: token.LBRACE, expectedLiteral: "{" },
+            { expectedType: token.STRING, expectedLiteral: "foo" },
+            { expectedType: token.COLON, expectedLiteral: ":" },
+            { expectedType: token.STRING, expectedLiteral: "bar" },
+            { expectedType: token.RBRACE, expectedLiteral: "}" },
+            { expectedType: token.NULL, expectedLiteral: "null" },
             { expectedType: token.EOF, expectedLiteral: "" },
         ];
     const l = new Lexer(input);

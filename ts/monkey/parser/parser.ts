@@ -87,6 +87,10 @@ export class Parser {
             token.LBRACKET,
             this.parseArrayLiteral.bind(this),
         );
+        this.registerPrefixFunction(
+            token.LBRACE,
+            this.parseHashLiteral.bind(this),
+        );
 
         this.infixParseFns = new Map<token.tokenType, infixParseFn>();
         this.registerInfixFunction(
@@ -356,19 +360,14 @@ export class Parser {
     // }
     private parseExpressionList(end: token.tokenType) {
         const args: ast.Expression[] = [];
-        if (this.peekTokenIs(end)) {
-            this.nextToken();
-            return args;
-        }
 
-        this.nextToken();
-        let exp = this.parseExpression(Precedence.LOWEST)!;
-        args.push(exp);
-        while (this.peekTokenIs(token.COMMA)) {
+        while (!this.peekTokenIs(end)) {
             this.nextToken();
-            this.nextToken();
-            exp = this.parseExpression(Precedence.LOWEST)!;
+            const exp = this.parseExpression(Precedence.LOWEST)!;
             args.push(exp);
+            if (!this.peekTokenIs(end) && !this.expectPeek(token.COMMA)) {
+                return null;
+            }
         }
         if (!this.expectPeek(end)) {
             return null;
@@ -395,6 +394,26 @@ export class Parser {
         const index = this.parseExpression(Precedence.LOWEST);
         if (!this.expectPeek(token.RBRACKET)) return null;
         return new ast.IndexExpression(tok, left, index!);
+    }
+    private parseHashLiteral() {
+        const tok = this.curToken;
+        const pairs = new Map<ast.Expression | null, ast.Expression | null>();
+        while (!this.peekTokenIs(token.RBRACE)) {
+            this.nextToken();
+            const key = this.parseExpression(Precedence.LOWEST);
+            if (!this.expectPeek(token.COLON)) return null;
+            this.nextToken();
+            const val = this.parseExpression(Precedence.LOWEST);
+            pairs.set(key, val);
+            if (
+                !this.peekTokenIs(token.RBRACE) &&
+                !this.expectPeek(token.COMMA)
+            ) {
+                return null;
+            }
+        }
+        if (!this.expectPeek(token.RBRACE)) return null;
+        return new ast.HashLiteral(tok, pairs);
     }
 
     private parsePrefixExpressison() {

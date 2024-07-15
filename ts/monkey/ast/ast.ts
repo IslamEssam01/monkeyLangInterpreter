@@ -296,3 +296,25 @@ export class IndexExpression implements Expression {
         return `(${this.left.string()}[${this.index.string()}])`;
     }
 }
+
+export class HashLiteral implements Expression {
+    token: Token;
+    pairs: Map<Expression | null, Expression | null>;
+    constructor(
+        token: Token,
+        pairs: Map<Expression | null, Expression | null>,
+    ) {
+        this.token = token;
+        this.pairs = pairs;
+    }
+    tokenLiteral(): string {
+        return this.token.literal;
+    }
+    string(): string {
+        const pairs: string[] = [];
+        this.pairs.forEach((val, key) => {
+            if (key && val) pairs.push(key.string() + ":" + val.string());
+        });
+        return `{${pairs.join(", ")}}`;
+    }
+}

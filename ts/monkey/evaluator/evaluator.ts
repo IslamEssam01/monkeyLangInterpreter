@@ -84,6 +84,9 @@ export function evaluate(
         if (isError(index)) return index;
         return evalIndexExpression(arr, index);
     }
+    if (node instanceof ast.HashLiteral) {
+        return evalHashLiteral(node, env);
+    }
 
     if (node instanceof ast.ReturnStatement) {
         const val = evaluate(node.returnValue!, env);
@@ -293,6 +296,8 @@ function evalIndexExpression(
 ) {
     if (left instanceof object.Array && index instanceof object.Integer)
         return evalArrayIndexExpression(left, index);
+    if (left instanceof object.Hash)
+        return evalHashIndexExpression(left, index);
     return newError(`index operator not supported: ${left.type()}`);
 }
 
@@ -306,6 +311,35 @@ function evalArrayIndexExpression(left: object.Array, index: object.Integer) {
         );
     }
     return left.elements[index.value];
+}
+
+function evalHashLiteral(node: ast.HashLiteral, env: Environment) {
+    const pairs = new Map<string, object.HashPair>();
+    for (const [keyNode, valNode] of node.pairs) {
+        const key = evaluate(keyNode!, env);
+        if (isError(key)) {
+            return key;
+        }
+        if (!(key instanceof object.Hashable)) {
+            return newError(`unusable as hash key: ${key.type()}`);
+        }
+        const val = evaluate(valNode!, env);
+        if (isError(val)) return val;
+
+        pairs.set(key.hashKey(), new object.HashPair(key, val));
+    }
+    return new object.Hash(pairs);
+}
+function evalHashIndexExpression(
+    left: object.Hash,
+    index: object.ObjectInterface,
+) {
+    if (!(index instanceof object.Hashable)) {
+        return newError(`unusable as hash key: ${index.type()}`);
+    }
+    const val = left.pairs.get(index.hashKey());
+    if (val) return val.value;
+    return NULL;
 }
 
 function applyFunction(

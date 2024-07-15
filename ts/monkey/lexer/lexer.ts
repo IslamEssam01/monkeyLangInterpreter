@@ -74,6 +74,9 @@ export default class Lexer {
             case `"`:
                 tok = { type: token.STRING, literal: this.readString() };
                 break;
+            case ":":
+                tok = { type: token.COLON, literal: this.ch };
+                break;
             case "":
                 tok = { type: token.EOF, literal: "" };
                 break;

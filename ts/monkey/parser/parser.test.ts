@@ -613,6 +613,68 @@ test("Test Parsing Index Expression", () => {
         testInfixExpression(indexExp.index, 1, "+", 1);
     }
 });
+test("parsing hash literals with expressions", () => {
+    const input = `{"one": 0 + 1, "two": 10 - 8, "three": 15 / 5}`;
+
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    checkParserErrors(p);
+
+    const stmt = program.statements[0] as ast.ExpressionStatement;
+    const hash = stmt.expression;
+    expect(hash).toBeInstanceOf(ast.HashLiteral);
+    if (hash instanceof ast.HashLiteral) {
+        expect(Array.from(hash.pairs.keys()).length).toBe(3);
+
+        const tests = new Map<string, (e: ast.Expression) => void>([
+            ["one", (e: ast.Expression) => testInfixExpression(e, 0, "+", 1)],
+            ["two", (e: ast.Expression) => testInfixExpression(e, 10, "-", 8)],
+            [
+                "three",
+                (e: ast.Expression) => testInfixExpression(e, 15, "/", 5),
+            ],
+        ]);
+
+        hash.pairs.forEach((val, key) => {
+            const literal = key as ast.StringLiteral;
+            const testFunc = tests.get(literal.string());
+
+            if (!testFunc) {
+                throw new Error(
+                    `No test function for key "${literal.string()}" found`,
+                );
+            }
+
+            testFunc(val!);
+        });
+    }
+});
+
+test("parsing empty hash literal", () => {
+    const input = "{}";
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    checkParserErrors(p);
+
+    const stmt = program.statements[0] as ast.ExpressionStatement;
+    const hash = stmt.expression;
+    expect(hash).toBeInstanceOf(ast.HashLiteral);
+    expect(Array.from((hash as ast.HashLiteral).pairs.keys()).length).toBe(0);
+});
+
+test("null", () => {
+    const input = "null;";
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    checkParserErrors(p);
+
+    const stmt = program.statements[0] as ast.ExpressionStatement;
+    const ident = stmt.expression;
+    expect(ident).toBeInstanceOf(ast.NullLiteral);
+});
 
 function testLetStatement(s: ast.Statement, name: string) {
     expect(s.tokenLiteral()).toBe("let");
