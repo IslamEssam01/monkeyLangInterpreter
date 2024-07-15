@@ -86,7 +86,7 @@ var builtins = map[string]*object.Builtin{
 
 			arr, ok := args[0].(*object.Array)
 			if !ok {
-				return newError("argument to `rest` must be ARRAY, got %s", args[0].Type())
+				return newError("argument to `push` must be ARRAY, got %s", args[0].Type())
 			}
 
 			newElements := make([]object.Object, len(arr.Elements)+1)
