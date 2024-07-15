@@ -88,6 +88,13 @@ export function evaluate(
         return evalHashLiteral(node, env);
     }
 
+    if (node instanceof ast.Ternary) {
+        const condition = evaluate(node.condition, env);
+        if (isError(condition)) return condition;
+        if (isTruthy(condition)) return evaluate(node.consequence, env);
+        return evaluate(node.alternative, env);
+    }
+
     if (node instanceof ast.ReturnStatement) {
         const val = evaluate(node.returnValue!, env);
         if (isError(val)) return val;

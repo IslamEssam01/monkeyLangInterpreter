@@ -399,6 +399,15 @@ test("Test Hash Literals", () => {
         if (pair) testIntegerObject(pair.value, val);
     });
 });
+test("Test Ternary", () => {
+    const input = `true ? 1 : 4;`;
+    const res = testEval(input);
+    expect(res).toBeInstanceOf(object.Integer);
+
+    if (res instanceof object.Integer) {
+        testIntegerObject(res, 1);
+    }
+});
 function testEval(input: string) {
     const l = new Lexer(input);
     const p = new Parser(l);

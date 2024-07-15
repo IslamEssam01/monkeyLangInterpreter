@@ -101,6 +101,18 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalHashLiteral(node, env)
 	case *ast.Null:
 		return NULL
+	case *ast.Ternary:
+		condition := Eval(node.Condition, env)
+		if isError(condition) {
+			return condition
+		}
+		if isTruthy(condition) {
+			consequence := Eval(node.Consequence, env)
+			return consequence
+		}
+		alternative := Eval(node.Alternative, env)
+		return alternative
+
 	}
 
 	return nil

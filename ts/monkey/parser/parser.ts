@@ -7,6 +7,7 @@ type prefixParseFn = () => ast.Expression | null;
 type infixParseFn = (left: ast.Expression) => ast.Expression | null;
 enum Precedence {
     LOWEST = 1,
+    TERNARY,
     EQUALS,
     LESSGREATER,
     SUM,
@@ -16,6 +17,7 @@ enum Precedence {
     INDEX,
 }
 const precedenceMp = new Map<token.tokenType, number>([
+    [token.QUESTION_MARK, Precedence.TERNARY],
     [token.EQ, Precedence.EQUALS],
     [token.NOT_EQ, Precedence.EQUALS],
     [token.LT, Precedence.LESSGREATER],
@@ -132,6 +134,10 @@ export class Parser {
         this.registerInfixFunction(
             token.LBRACKET,
             this.parseIndexExpression.bind(this),
+        );
+        this.registerInfixFunction(
+            token.QUESTION_MARK,
+            this.parseTernaryExpression.bind(this),
         );
     }
 
@@ -414,6 +420,18 @@ export class Parser {
         }
         if (!this.expectPeek(token.RBRACE)) return null;
         return new ast.HashLiteral(tok, pairs);
+    }
+
+    private parseTernaryExpression(left: ast.Expression) {
+        const tok = this.curToken;
+        this.nextToken();
+        const consequence = this.parseExpression(Precedence.LOWEST);
+        if (!consequence) return null;
+        if (!this.expectPeek(token.COLON)) return null;
+        this.nextToken();
+        const alternative = this.parseExpression(Precedence.LOWEST);
+        if (!alternative) return null;
+        return new ast.Ternary(tok, left, consequence, alternative);
     }
 
     private parsePrefixExpressison() {

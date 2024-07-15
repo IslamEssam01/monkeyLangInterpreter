@@ -934,6 +934,35 @@ func TestNull(t *testing.T) {
 	}
 }
 
+func TestTernary(t *testing.T) {
+	input := "true ? 1 : 5"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+	tern, ok := stmt.Expression.(*ast.Ternary)
+	if !ok {
+		t.Fatalf("exp not *ast.Ternary. got=%T", stmt.Expression)
+	}
+	_, ok = tern.Condition.(*ast.Boolean)
+	if !ok {
+		t.Fatalf("condition not *ast.Boolean. got=%T", tern.Condition)
+	}
+	_, ok = tern.Consequence.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("consequence not *ast.IntegerLiteral. got=%T", tern.Consequence)
+	}
+	_, ok = tern.Alternative.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("alternative not *ast.IntegerLiteral. got=%T", tern.Alternative)
+	}
+}
+
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())

@@ -77,6 +77,9 @@ export default class Lexer {
             case ":":
                 tok = { type: token.COLON, literal: this.ch };
                 break;
+            case "?":
+                tok = { type: token.QUESTION_MARK, literal: this.ch };
+                break;
             case "":
                 tok = { type: token.EOF, literal: "" };
                 break;

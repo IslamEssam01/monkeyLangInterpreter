@@ -675,6 +675,25 @@ test("null", () => {
     const ident = stmt.expression;
     expect(ident).toBeInstanceOf(ast.NullLiteral);
 });
+test("ternary", () => {
+    const input = "true ? 1 : 5 ;";
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    checkParserErrors(p);
+
+    const stmt = program.statements[0] as ast.ExpressionStatement;
+    const tern = stmt.expression;
+    expect(tern).toBeInstanceOf(ast.Ternary);
+    if (tern instanceof ast.Ternary) {
+        expect(tern.condition).toBeInstanceOf(ast.BooleanLiteral);
+        testBooleanLiteral(tern.condition as ast.BooleanLiteral, true);
+        expect(tern.consequence).toBeInstanceOf(ast.IntegerLiteral);
+        testIntegerLiteral(tern.consequence as ast.IntegerLiteral, 1);
+        expect(tern.alternative).toBeInstanceOf(ast.IntegerLiteral);
+        testIntegerLiteral(tern.alternative as ast.IntegerLiteral, 5);
+    }
+});
 
 function testLetStatement(s: ast.Statement, name: string) {
     expect(s.tokenLiteral()).toBe("let");

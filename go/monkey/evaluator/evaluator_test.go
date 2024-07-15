@@ -540,6 +540,18 @@ func TestNull(t *testing.T) {
 	}
 }
 
+func TestTernary(t *testing.T) {
+	input := "true ? 5 : 1"
+	evaluated := testEval(input)
+	res, ok := evaluated.(*object.Integer)
+	if !ok {
+		t.Fatalf("object is not INTEGER. got=%T (%+v)", evaluated, evaluated)
+	}
+	if res.Value != 5 {
+		t.Fatalf("result value is not 5. got=%d", res.Value)
+	}
+}
+
 func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 	result, ok := obj.(*object.Boolean)
 	if !ok {

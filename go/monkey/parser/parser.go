@@ -12,6 +12,7 @@ import (
 const (
 	_ int = iota
 	LOWEST
+	TERNARY
 	EQUALS      // ==
 	LESSGREATER // > or <
 	SUM         // +
@@ -22,16 +23,17 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
-	token.EQ:       EQUALS,
-	token.NOT_EQ:   EQUALS,
-	token.LT:       LESSGREATER,
-	token.GT:       LESSGREATER,
-	token.PLUS:     SUM,
-	token.MINUS:    SUM,
-	token.SLASH:    PRODUCT,
-	token.ASTERISK: PRODUCT,
-	token.LPAREN:   CALL,
-	token.LBRACKET: INDEX,
+	token.QUESTION_MARK: TERNARY,
+	token.EQ:            EQUALS,
+	token.NOT_EQ:        EQUALS,
+	token.LT:            LESSGREATER,
+	token.GT:            LESSGREATER,
+	token.PLUS:          SUM,
+	token.MINUS:         SUM,
+	token.SLASH:         PRODUCT,
+	token.ASTERISK:      PRODUCT,
+	token.LPAREN:        CALL,
+	token.LBRACKET:      INDEX,
 }
 
 type (
@@ -83,6 +85,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.QUESTION_MARK, p.parseTernaryExpression)
 
 	return p
 }
@@ -423,6 +426,17 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 
 func (p *Parser) parseNull() ast.Expression {
 	return &ast.Null{Token: p.curToken}
+}
+
+func (p *Parser) parseTernaryExpression(left ast.Expression) ast.Expression {
+	p.nextToken()
+	consequence := p.parseExpression(LOWEST)
+	if !p.expectPeek(token.COLON) {
+		return nil
+	}
+	p.nextToken()
+	alternative := p.parseExpression(LOWEST)
+	return &ast.Ternary{Condition: left, Consequence: consequence, Alternative: alternative}
 }
 
 func (p *Parser) curTokenIs(t token.TokenType) bool {

@@ -10,4 +10,5 @@
 - adding line number to tokens by lexer [ x ]
 - check in function parameters that it takes identifier ( right now it accepts anything ) [ x ]
 - make this syntax give an error `fn(,,,){}` [ x ]
-- add ternary operator [ x ]
+- add ternary operator [ - ]
+- add switch [ x ]

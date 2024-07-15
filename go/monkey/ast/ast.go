@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"monkey/token"
 	"strings"
 )
@@ -321,3 +322,21 @@ type Null struct {
 func (n *Null) expressionNode()      {}
 func (n *Null) TokenLiteral() string { return n.Token.Literal }
 func (n *Null) String() string       { return n.Token.Literal }
+
+type Ternary struct {
+	Token       token.Token
+	Condition   Expression
+	Consequence Expression
+	Alternative Expression
+}
+
+func (t *Ternary) expressionNode()      {}
+func (t *Ternary) TokenLiteral() string { return t.Token.Literal }
+func (t *Ternary) String() string {
+	return fmt.Sprintf(
+		"%s ? %s : %s",
+		t.Condition.String(),
+		t.Consequence.String(),
+		t.Alternative.String(),
+	)
+}

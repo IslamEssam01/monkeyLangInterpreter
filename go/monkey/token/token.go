@@ -34,6 +34,7 @@ const (
 	COMMA     = ","
 	SEMICOLON = ";"
 	COLON     = ":"
+    QUESTION_MARK = "?"
 
 	LPAREN   = "("
 	RPAREN   = ")"

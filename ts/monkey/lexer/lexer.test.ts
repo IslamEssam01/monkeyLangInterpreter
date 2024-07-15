@@ -25,7 +25,7 @@ test("Test Next Token", () => {
     "foo bar"
     [1,2];
     {"foo": "bar"}
-    null
+    null?
 `;
     const tests: { expectedType: token.tokenType; expectedLiteral: string }[] =
         [
@@ -116,6 +116,7 @@ test("Test Next Token", () => {
             { expectedType: token.STRING, expectedLiteral: "bar" },
             { expectedType: token.RBRACE, expectedLiteral: "}" },
             { expectedType: token.NULL, expectedLiteral: "null" },
+            { expectedType: token.QUESTION_MARK, expectedLiteral: "?" },
             { expectedType: token.EOF, expectedLiteral: "" },
         ];
     const l = new Lexer(input);

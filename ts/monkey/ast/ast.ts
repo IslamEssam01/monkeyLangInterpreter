@@ -318,3 +318,27 @@ export class HashLiteral implements Expression {
         return `{${pairs.join(", ")}}`;
     }
 }
+
+export class Ternary implements Expression {
+    token: Token;
+    condition: Expression;
+    consequence: Expression;
+    alternative: Expression;
+    constructor(
+        token: Token,
+        condition: Expression,
+        consequence: Expression,
+        alternative: Expression,
+    ) {
+        this.token = token;
+        this.condition = condition;
+        this.consequence = consequence;
+        this.alternative = alternative;
+    }
+    tokenLiteral(): string {
+        return this.token.literal;
+    }
+    string(): string {
+        return `${this.condition.string()} ? ${this.consequence.string()} : ${this.alternative.string()}`;
+    }
+}
