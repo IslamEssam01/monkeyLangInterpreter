@@ -401,6 +401,7 @@ function isTruthy(obj: object.ObjectInterface) {
             return false;
 
         default:
+            if (obj instanceof object.Integer && obj.value === 0) return false;
             return true;
     }
 }
